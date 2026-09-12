@@ -1,0 +1,1830 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LikeLEARN Dashboard</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js"></script>
+  <!-- โหลดฟอนต์ Mali (Cadson Demak) เป็นหลัก และฟอนต์ภาษาไทยฟรีอื่นๆ จาก Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Kanit:wght@400;600&family=Prompt:wght@400;600&family=Sarabun:wght@400;600&family=Chakra+Petch:wght@400;600&family=Krub:wght@400;600&family=Mitr:wght@400;600&family=Pattaya&family=Taviraj:wght@400;600&family=Trirong:wght@400;600&family=Niramit:wght@400;600&family=Itim&family=Srisakdi:wght@400;700&family=Chonburi&family=Charm:wght@400;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --ink: #0f172a;
+      --slate: #e0f2fe;
+      --line: #7dd3fc;
+      --sky: #0284c7;
+      --dynamic-text-color: #ffffff;
+      --dynamic-border-color: #7dd3fc;
+      --app-font-family: 'Mali', cursive, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      overflow: hidden;
+      color: var(--dynamic-text-color);
+      font-family: var(--app-font-family);
+      background: #0f172a;
+      user-select: none;
+    }
+
+    button { font: inherit; color: inherit; }
+    button:focus-visible { outline: 2px solid #f8fafc; outline-offset: 3px; }
+
+    /* Custom Scrollbar Dynamic Color */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { 
+      background: var(--dynamic-text-color); 
+      border-radius: 4px; 
+      opacity: 0.8;
+    }
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--dynamic-text-color) rgba(15, 23, 42, 0.6);
+    }
+
+    .app-shell {
+      width: 100%;
+      height: calc(100 * min(var(--vh, 1vh), 1vh));
+      overflow: hidden;
+      background: #0f172a;
+    }
+
+    .top-bar-wrapper {
+      width: 100%;
+      height: calc(5 * min(var(--vh, 1vh), 1vh));
+      min-height: 42px;
+      position: relative;
+      z-index: 50;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    .top-bar {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      border-bottom: 2px solid var(--dynamic-border-color);
+      background: #0f172a;
+    }
+
+    .top-bar-left, .top-bar-right {
+      width: 25vw;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .top-bar-left {
+      color: inherit;
+      font-size: clamp(.62rem, 1.2vw, .85rem);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-bar-center {
+      flex: 1;
+      min-width: 0;
+      padding: 0 12px;
+      color: inherit;
+      font-size: clamp(.62rem, 1.2vw, .85rem);
+      font-weight: 600;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-bar-right {
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: clamp(28px, 2.5vw, 38px);
+      height: clamp(28px, 2.5vw, 38px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 0;
+      border-radius: 7px;
+      color: inherit;
+      background: transparent;
+      transition: background .2s ease, transform .2s ease, color .2s ease;
+    }
+
+    .icon-btn:hover { background: rgba(56,189,248,.14); transform: translateY(-1px); }
+    .icon-btn.is-active { background: rgba(56,189,248,.18); color: inherit; }
+    .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; }
+
+    .app-container {
+      width: 100%;
+      height: calc(95 * min(var(--vh, 1vh), 1vh));
+      min-height: 0;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      transition: height .3s ease;
+    }
+
+    .sidebar-wrapper {
+      width: 0;
+      height: 100%;
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+      transition: width .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    .sidebar-wrapper.open { width: 25vw; }
+
+    .sidebar {
+      width: 25vw;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #1e293b;
+      border: 1px solid var(--dynamic-border-color);
+      box-shadow: 0 0 24px rgba(0,0,0,.45);
+      position: absolute;
+      top: 0;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    .sidebar-left .sidebar { left: 0; transform: translateX(-100%); }
+    .sidebar-right .sidebar { right: 0; transform: translateX(100%); }
+    .sidebar-left.open .sidebar, .sidebar-right.open .sidebar { transform: translateX(0); }
+
+    .panel-slot {
+      border: 1px solid var(--dynamic-border-color);
+      border-radius: 7px;
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    .left-top {
+      height: 87%;
+      min-height: 0;
+      margin: 4px;
+      padding: 0.6vw;
+      background: #1e293b;
+      border: 1px solid var(--dynamic-border-color);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5vw;
+      overflow: hidden;
+      color: inherit;
+      position: relative;
+    }
+
+    .schedule-header-title { color: inherit; font-size: clamp(.7rem, 1.1vw, 1rem); font-weight: 700; display: flex; align-items: center; gap: .4vw; }
+    .schedule-date-box { padding: .4vw .6vw; border: 1px solid var(--dynamic-border-color); border-radius: 6px; background: rgba(30, 41, 59, 0.25); color: inherit; font-size: clamp(.6rem, .9vw, .85rem); font-weight: 600; text-align: center; }
+    
+    .schedule-list-scroll { 
+      display: flex; 
+      flex: 1; 
+      min-height: 0; 
+      flex-direction: column; 
+      overflow-y: auto; 
+      padding-right: 2px; 
+      position: relative;
+    }
+    
+    .timeline-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .calendar-row { 
+      display: flex; 
+      align-items: center; 
+      gap: .6vw; 
+      height: 48px; 
+      box-sizing: border-box;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    .calendar-time-label { width: 3.2vw; flex-shrink: 0; color: inherit; font-size: clamp(.55rem, .8vw, .78rem); font-weight: 600; text-align: right; }
+    .calendar-blank-grid { flex: 1; height: 100%; min-width: 0; border-radius: 4px; cursor: pointer; transition: background .2s ease; }
+    .calendar-blank-grid:hover { background: rgba(241, 245, 249, 0.08); }
+
+    .event-block {
+      position: absolute;
+      left: calc(3.2vw + .6vw);
+      right: 0;
+      border-radius: 6px;
+      padding: 4px 8px;
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 5;
+      transition: transform 0.1s ease, filter 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .event-block:hover {
+      filter: brightness(1.1);
+      transform: scale(0.99);
+    }
+    .event-title-text { font-weight: 700; font-size: 0.8rem; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .event-time-text { font-size: 0.7rem; opacity: 0.9; margin-top: 2px; font-weight: 500; }
+
+    .schedule-btn { padding: .4vw; border: 1px solid var(--dynamic-border-color); border-radius: 6px; background: rgba(30, 41, 59, 0.25); color: inherit; font-size: clamp(.55rem, .8vw, .75rem); font-weight: 600; text-align: center; cursor: pointer; transition: background .2s ease; }
+    .schedule-btn:hover { background: rgba(56,189,248,.2); }
+
+    .today-modal-view {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: #0f172a; z-index: 30; padding: 10px; display: none;
+      flex-direction: column; gap: 8px; border: 1px solid var(--dynamic-border-color);
+    }
+    .today-modal-view.is-visible { display: flex; }
+
+    .left-bottom {
+      height: 13%;
+      margin: 0 4px 4px;
+      background: #1e293b;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border: 1px solid var(--dynamic-border-color);
+    }
+
+    .right-slot-1 {
+      height: 90%;
+      margin: 4px;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--dynamic-border-color);
+    }
+
+    .music-view, .tool-view, .theme-view {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      margin: 0; padding: 12px; background: #0f172a;
+      display: none; flex-direction: column; gap: 12px; z-index: 20;
+      overflow-y: auto; border: 1px solid var(--dynamic-border-color);
+    }
+    .music-view.is-visible, .tool-view.is-visible, .theme-view.is-visible { display: flex; }
+    .tool-view-header, .music-view-header, .theme-view-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .tool-view-title, .music-view-title, .theme-view-title { color: inherit; font-size: 1rem; font-weight: 700; }
+    .music-empty-msg { width: 100%; padding: 16px 12px; border: 1px dashed var(--dynamic-border-color); border-radius: 8px; background: rgba(30, 41, 59, 0.25); color: inherit; text-align: center; font-size: 0.9rem; margin: auto 0; }
+    .theme-back, .music-back { align-self: flex-start; padding: 6px 9px; border: 1px solid var(--dynamic-border-color); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+    .theme-back:hover, .music-back:hover { background: rgba(56,189,248,.1); }
+
+    .tool-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%; }
+    .tool-action-btn { padding: 6px 16px; border: 1px solid var(--dynamic-border-color); border-radius: 6px; background: rgba(56, 189, 248, 0.25); color: inherit; cursor: pointer; font-weight: 600; }
+    .tool-action-btn:hover { background: rgba(56, 189, 248, 0.4); }
+
+    .alarm-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; width: 100%; }
+    .add-alarm-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--dynamic-border-color); background: rgba(56, 189, 248, 0.25); color: inherit; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .alarm-list { flex: 1; width: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .alarm-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(30, 41, 59, 0.25); border: 1px solid var(--dynamic-border-color); border-radius: 6px; }
+
+    /* Switch */
+    .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #38bdf8; }
+    input:checked + .slider:before { transform: translateX(16px); }
+
+    .picker-container { display: flex; align-items: center; gap: 12px; }
+    .picker-column { display: flex; flex-direction: column; align-items: center; }
+    .picker-btn { background: transparent; border: none; color: inherit; cursor: pointer; padding: 4px; }
+    .picker-val { width: 50px; height: 40px; border: 1px solid var(--dynamic-border-color); background: rgba(30, 41, 59, 0.25); color: inherit; font-size: 1.25rem; font-weight: 700; text-align: center; border-radius: 6px; }
+    .alarm-label-input { width: 100%; padding: 6px 10px; border: 1px solid var(--dynamic-border-color); background: transparent; color: inherit; border-radius: 6px; font-size: 0.85rem; }
+    .form-actions { display: flex; gap: 10px; width: 100%; }
+    .btn-save { flex: 1; padding: 6px; background: transparent; border: 1px solid var(--dynamic-border-color); color: inherit; border-radius: 6px; cursor: pointer; }
+    .btn-cancel { flex: 1; padding: 6px; background: transparent; border: 1px solid var(--dynamic-border-color); color: inherit; border-radius: 6px; cursor: pointer; }
+
+    .timer-display-box { font-size: 1.5rem; font-weight: bold; font-family: inherit; margin-bottom: 8px; color: inherit; }
+    .btn-group { display: flex; gap: 8px; }
+
+    .time-circle-wrapper { position: relative; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .time-circle-svg { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+    .time-circle-bg { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 4; }
+    .time-circle-progress { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.3s ease; }
+
+    .input-unit-group { display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; color: inherit; }
+
+    .theme-palette { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; flex-shrink: 0; }
+    .theme-swatch { width: 100%; aspect-ratio: 1; border: 2px solid var(--dynamic-border-color); border-radius: 50%; cursor: pointer; }
+    .theme-custom { width: 100%; padding: 8px 12px; border: 1px solid var(--dynamic-border-color); border-radius: 8px; background: rgba(30, 41, 59, 0.25); color: inherit; text-align: left; cursor: pointer; flex-shrink: 0; }
+    .theme-color-wheel { width: clamp(100px, 12vw, 150px); aspect-ratio: 1; align-self: center; position: relative; border: 3px solid #f8fafc; border-radius: 50%; overflow: hidden; cursor: crosshair; }
+    .theme-color-wheel canvas { display: block; width: 100%; height: 100%; }
+
+    .controls-wrapper { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    .slider-row { display: flex; align-items: center; gap: 8px; width: 100%; }
+    .slider-container { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .theme-slider { width: 100%; height: 10px; border-radius: 5px; outline: none; -webkit-appearance: none; cursor: pointer; border: 1px solid var(--dynamic-border-color); }
+    .theme-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #ffffff; border: 2px solid #0f172a; cursor: pointer; }
+    #lightnessSlider { background: linear-gradient(to right, #000000, #808080, #ffffff); }
+    #hueSlider { background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000); }
+
+    .text-mode-btn { display: flex; align-items: center; gap: 4px; padding: 4px 6px; border: 1px solid var(--dynamic-border-color); border-radius: 6px; background: rgba(30, 41, 59, 0.25); cursor: pointer; color: inherit; }
+    .text-mode-btn.is-active { border-color: #38bdf8; background: rgba(56, 189, 248, 0.25); }
+    .text-icon-a { font-weight: 700; font-size: 0.95rem; color: inherit; }
+    .mini-spectrum-v { width: 5px; height: 22px; border-radius: 3px; background: linear-gradient(to bottom, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000); }
+
+    .right-grid-container { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 4px; }
+    .grid-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--dynamic-border-color); border-radius: 8px; padding: 6px; cursor: pointer; color: inherit; background: rgba(30, 41, 59, 0.5); }
+    .grid-item:hover { background: rgba(56,189,248,.12); transform: translateY(-1px); }
+    .grid-item svg { width: clamp(18px, 1.8vw, 22px); height: clamp(18px, 1.8vw, 22px); stroke: currentColor; }
+    .grid-item-label { font-size: clamp(.6rem, .85vw, .78rem); text-align: center; color: inherit; }
+
+    .right-bottom-container { height: 10%; display: flex; flex-direction: column; padding: 0 4px 4px; }
+    .right-slot-3 { height: 100%; padding: 7px 10px; background: transparent; border: 1px solid var(--dynamic-border-color); border-radius: 7px; display: flex; align-items: center; justify-content: flex-end; text-align: right; color: inherit; }
+
+    .panel-copy { margin: 0; color: inherit; font-size: .78rem; line-height: 1.55; }
+
+    .main-content { flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+    .time-display { margin: 0 2.8vh; padding: clamp(16px, 2.2vh, 28px) clamp(18px, 3vw, 48px); color: inherit; font-family: inherit; font-size: clamp(1.35rem, 5vw, 6rem); letter-spacing: .08em; line-height: 1; white-space: nowrap; z-index: 2; }
+
+    .toggle-handle { position: absolute; top: 35%; width: clamp(32px, 4.75vh, 54px); height: 30%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--dynamic-border-color); color: inherit; background: transparent; opacity: 0; visibility: hidden; z-index: 20; transition: opacity .25s ease, visibility .25s ease; }
+    .toggle-handle.visible { opacity: 1; visibility: visible; }
+    .toggle-handle-left { right: clamp(-54px, -4.75vh, -32px); border-radius: 0 10px 10px 0; }
+    .toggle-handle-right { left: clamp(-54px, -4.75vh, -32px); border-radius: 10px 0 0 10px; }
+
+    .toggle-ui-btn { position: fixed; top: 10px; right: 15px; z-index: 100; border: none !important; background: transparent !important; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; color: inherit; }
+    .toggle-ui-btn.visible { opacity: 1; visibility: visible; }
+
+    body.hide-all-ui .top-bar-wrapper { position: absolute; transform: translateY(-100%); }
+    body.hide-all-ui .app-container { height: calc(100 * min(var(--vh, 1vh), 1vh)); }
+    body.hide-all-ui .sidebar-wrapper { display: none; }
+    body.hide-all-ui .main-content { width: 100%; }
+
+    /* ร้านค้าซื้อฟอนต์ แก้ไขให้เต็มพื้นที่ */
+    .font-shop-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .font-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      border: 1px solid var(--dynamic-border-color);
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .font-card.is-active-font {
+      outline: 2px solid var(--dynamic-text-color);
+      box-shadow: 0 0 10px var(--dynamic-text-color);
+    }
+    .font-preview-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+    .font-name-title { font-size: 0.85rem; font-weight: 700; opacity: 0.9; }
+    .font-sample-text { font-size: 1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    @media (max-width: 640px) {
+      .top-bar-left, .top-bar-right { width: 30vw; }
+      .sidebar-wrapper.open { width: 72vw; }
+      .sidebar { width: 72vw; }
+    }
+  </style>
+</head>
+<body data-template-id="__page-root">
+  <div class="app-shell">
+   <header class="top-bar-wrapper">
+    <div data-template-id="top-bar" class="top-bar canva-header">
+     <div class="top-bar-left">
+      <span id="dateDisplay" aria-live="polite">--</span>
+     </div>
+     <div class="top-bar-center">
+      <span id="timezoneDisplay" aria-live="polite">Timezone: --</span>
+     </div>
+     <nav class="top-bar-right" aria-label="การควบคุมแดชบอร์ด">
+      <button id="musicBtn" class="icon-btn" type="button" aria-label="เปิดเสียงบรรยากาศ" title="เปิดเสียงบรรยากาศ"> <i data-lucide="music-2"></i> </button> 
+      <button id="uiToggleBtn" class="icon-btn" type="button" aria-label="เปิดโหมด Zen" title="เปิดโหมด Zen"> <i data-lucide="maximize"></i> </button> 
+      <button id="profileBtn" class="icon-btn" type="button" aria-label="เปิดแผงโปรไฟล์" title="เปิดแผงโปรไฟล์"> <i data-lucide="user-round"></i> </button>
+     </nav>
+    </div>
+   </header>
+   <button id="floatingUiToggleBtn" class="icon-btn toggle-ui-btn" type="button" aria-label="ออกจากโหมด Zen" title="ออกจากโหมด Zen"> <i data-lucide="minimize"></i> </button>
+   
+   <main class="app-container" id="appContainer">
+    <!-- Left Sidebar -->
+    <aside class="sidebar-wrapper sidebar-left" id="sidebarLeftWrapper" aria-label="แผงโฟกัส">
+     <div class="sidebar">
+      <section data-template-id="left-focus-panel" class="panel-slot left-top canva-panel">
+       <div data-template-id="schedule-title" class="schedule-header-title canva-text">ตารางกิจกรรม</div>
+       <div data-template-id="schedule-date" class="schedule-date-box canva-text" aria-live="polite">วัน - เดือน - ปี</div>
+       <div class="schedule-list-scroll" id="calendarScrollContainer" aria-label="ตารางเวลา 24 ชั่วโมง"></div>
+       <button id="viewTodayBtn" data-template-id="schedule-view-today" class="schedule-btn canva-button">ดูทั้งหมดของวันนี้</button>
+       <button id="viewOtherDaysBtn" data-template-id="schedule-view-other" class="schedule-btn canva-button">ดูตารางในวันอื่นๆ ›</button>
+
+       <!-- Today Modal View -->
+       <div id="todayModalView" class="today-modal-view">
+         <div style="display:flex; justify-content:space-between; align-items:center;">
+           <span style="font-weight:bold; font-size:0.9rem;">ตารางกิจกรรมวันนี้</span>
+           <button id="closeTodayModalBtn" style="color:inherit; background:transparent; border:none; cursor:pointer; font-size:0.8rem; opacity: 0.8;">✕ ปิด</button>
+         </div>
+         <div id="todayEventsList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>
+         <button id="addEventModalBtn" class="schedule-btn" style="background:rgba(56, 189, 248, 0.2);">+ เพิ่ม/แก้ไข กิจกรรม</button>
+
+         <!-- Structure for Add/Edit Activity -->
+         <div id="addEventForm" style="display:none; flex-direction:column; gap:8px; margin-top:8px; border-top:1px solid var(--dynamic-border-color); padding-top:8px;">
+           <div style="display:flex; flex-direction:column; gap:2px;">
+             <label style="font-size:0.75rem;">1. ชื่อกิจกรรม</label>
+             <input type="text" id="eventTitleInput" placeholder="ระบุชื่อกิจกรรม" style="padding:4px 8px; border:1px solid var(--dynamic-border-color); background:transparent; color:inherit; border-radius:4px; font-size:0.8rem;">
+           </div>
+           <div style="display:flex; flex-direction:column; gap:2px;">
+             <label style="font-size:0.75rem;">2. ตั้งค่าช่วงเวลา (ระบุนาที)</label>
+             <div style="display:flex; flex-direction:column; gap:4px; font-size:0.8rem;">
+               <div style="display:flex; align-items:center; gap:4px;">
+                 <span style="width: 32px;">เริ่ม:</span>
+                 <select id="eventStartHour" style="background:transparent; color:inherit; border:1px solid var(--dynamic-border-color); border-radius:4px; padding:2px;"></select>
+                 <span>:</span>
+                 <select id="eventStartMin" style="background:transparent; color:inherit; border:1px solid var(--dynamic-border-color); border-radius:4px; padding:2px;"></select>
+                 <span>น.</span>
+               </div>
+               <div style="display:flex; align-items:center; gap:4px;">
+                 <span style="width: 32px;">ถึง:</span>
+                 <select id="eventEndHour" style="background:transparent; color:inherit; border:1px solid var(--dynamic-border-color); border-radius:4px; padding:2px;"></select>
+                 <span>:</span>
+                 <select id="eventEndMin" style="background:transparent; color:inherit; border:1px solid var(--dynamic-border-color); border-radius:4px; padding:2px;"></select>
+                 <span>น.</span>
+               </div>
+             </div>
+           </div>
+           <div style="display:flex; flex-direction:column; gap:2px;">
+             <label style="font-size:0.75rem;">3. เลือกสีตาราง</label>
+             <input type="color" id="eventColorInput" value="#38bdf8" style="width:100%; height:28px; border:none; border-radius:4px; cursor:pointer; background:transparent;">
+           </div>
+           <div style="display:flex; justify-content:space-between; gap:8px; margin-top:4px;">
+             <button id="cancelEventFormBtn" class="btn-cancel" style="flex:1; padding:4px; font-size:0.8rem; cursor:pointer;">ยกเลิก</button>
+             <button id="saveEventFormBtn" class="btn-save" style="flex:1; padding:4px; font-size:0.8rem; cursor:pointer;">บันทึก</button>
+           </div>
+         </div>
+       </div>
+      </section>
+
+      <section data-template-id="left-note-panel" class="panel-slot left-bottom canva-panel">
+       <p id="leftNoteText" data-template-id="left-note-text" class="panel-copy canva-text" style="font-style: italic;">ขณะนี้อยู่ในโหมดปกติ</p>
+      </section>
+     </div>
+     <button id="handleLeft" class="toggle-handle toggle-handle-left" type="button" aria-label="เปิดหรือปิดแผงด้านซ้าย"> <i id="leftIcon" data-lucide="chevron-right"></i> </button>
+    </aside>
+
+    <!-- Main Content Clock -->
+    <section class="main-content" aria-label="เวลาปัจจุบัน">
+     <div class="time-circle-wrapper" id="mainTimeCircleWrapper">
+       <svg class="time-circle-svg" id="mainTimeCircleSvg" style="display:none;" viewBox="0 0 100 100">
+         <circle class="time-circle-bg" cx="50" cy="50" r="45"></circle>
+         <circle class="time-circle-progress" id="mainTimeCircleProgress" cx="50" cy="50" r="45" stroke-dasharray="282.7" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+       </svg>
+       <output id="clock" class="time-display" aria-live="polite">00:00:00</output>
+     </div>
+    </section>
+
+    <!-- Right Sidebar -->
+    <aside class="sidebar-wrapper sidebar-right" id="sidebarRightWrapper" aria-label="แผงการเรียน">
+     <div class="sidebar">
+      <section data-template-id="right-profile-panel" class="panel-slot right-slot-1 canva-panel">
+       <div class="right-grid-container">
+         <button data-template-id="feature-music" class="grid-item canva-card" type="button"><i data-lucide="music-2"></i><span class="grid-item-label canva-text">เพลง</span></button> 
+         <button data-template-id="feature-coins" id="featureCoins" class="grid-item canva-card" type="button"><i data-lucide="circle-dollar-sign"></i><span class="grid-item-label canva-text">คอยน์</span></button> 
+         <button data-template-id="feature-theme" class="grid-item canva-card" type="button"><i data-lucide="palette"></i><span class="grid-item-label canva-text">ธีม</span></button> 
+         <button id="createQuestionBtn" class="grid-item canva-card" type="button"><i data-lucide="help-circle"></i><span class="grid-item-label canva-text">สร้างโจทย์</span></button> 
+         <button data-template-id="feature-alarm" id="featureAlarm" class="grid-item canva-card" type="button"><i data-lucide="alarm-clock"></i><span class="grid-item-label canva-text">แจ้งเตือนเวลา</span></button> 
+         <button data-template-id="feature-timer" id="featureTimer" class="grid-item canva-card" type="button"><i data-lucide="timer"></i><span class="grid-item-label canva-text">จับเวลา</span></button> 
+         <button data-template-id="feature-countdown" id="featureCountdown" class="grid-item canva-card" type="button"><i data-lucide="hourglass"></i><span class="grid-item-label canva-text">นับถอยหลัง</span></button> 
+         <button data-template-id="feature-history" id="featureHistory" class="grid-item canva-card" type="button"><i data-lucide="chart-no-axes-column"></i><span class="grid-item-label canva-text">ประวัติ</span></button>
+       </div>
+       
+       <!-- Coins View -->
+       <section id="coinsView" class="tool-view" aria-label="ระบบคอยน์">
+        <div class="tool-view-header">
+         <h2 class="tool-view-title">คอยน์สะสม</h2><i data-lucide="circle-dollar-sign"></i>
+        </div>
+        <div class="tool-content">
+         <div style="text-align: center; margin-bottom: 12px;">
+           <div style="font-size: 0.85rem;">คอยน์ปัจจุบัน</div>
+           <div id="coinBalanceDisplay" style="font-size: 2.5rem; font-weight: bold; color: inherit;">0</div>
+         </div>
+         <div style="width: 100%; padding: 10px; background: rgba(30, 41, 59, 0.4); border-radius: 8px; border: 1px solid var(--dynamic-border-color); text-align: center;">
+           <div style="font-size: 0.8rem; margin-bottom: 4px;">เวลาสะสมแลกคอยน์ (ทุก 5 นาที = 1 คอยน์)</div>
+           <div id="accumulatedTimeDisplay" style="font-size: 1.2rem; font-weight: bold; font-family: inherit;">00:00</div>
+           
+           <div style="margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+             <input type="number" id="coinExchangeInput" min="1" value="1" placeholder="จำนวน" style="width: 60px; padding: 4px; border-radius: 4px; background: transparent; color: inherit; border: 1px solid var(--dynamic-border-color); text-align: center;">
+             <button id="convertCoinBtn" class="tool-action-btn" style="width: auto; font-size: 0.85rem;" type="button">แลก</button>
+           </div>
+         </div>
+        </div>
+        <div class="alarm-footer">
+          <button id="coinsBackBtn" class="theme-back" type="button">‹ กลับ</button>
+          <button id="cartBtn" class="add-alarm-btn" type="button" title="ร้านค้าฟอนต์"><i data-lucide="shopping-cart"></i></button>
+        </div>
+       </section>
+
+       <!-- Shop View ( Font Shop ) -->
+       <section id="shopView" class="tool-view" aria-label="ร้านค้าฟอนต์">
+        <div class="tool-view-header">
+         <h2 class="tool-view-title">ร้านค้าฟอนต์ (5 คอยน์)</h2><i data-lucide="shopping-cart"></i>
+        </div>
+        <div class="font-shop-list" id="fontShopContainer"></div>
+        <button id="shopBackBtn" class="theme-back" type="button" style="margin-top: auto;">‹ กลับ</button>
+       </section>
+
+       <!-- Theme View -->
+       <section id="themeView" class="theme-view" aria-label="หน้าเลือกธีม">
+        <div class="theme-view-header">
+         <h2 data-template-id="theme-view-title" class="theme-view-title canva-text">เลือกธีม</h2><i data-lucide="palette"></i>
+        </div>
+        <div class="theme-palette" aria-label="สีพื้นฐาน">
+          <button data-template-id="theme-default" class="theme-swatch canva-button" type="button" aria-label="สีค่าเริ่มต้น" style="background:#0f172a"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีดำ" style="background:#000000"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีขาว" style="background:#ffffff"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีแดง" style="background:#ef4444"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีส้ม" style="background:#f97316"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีเหลือง" style="background:#facc15"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีชมพูโรส" style="background:#f43f5e"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีม่วง" style="background:#9333ea"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีน้ำเงิน" style="background:#2563eb"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีฟ้า" style="background:#38bdf8"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีเขียวอมฟ้า" style="background:#14b8a6"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีเขียว" style="background:#22c55e"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีเขียวมะนาว" style="background:#84cc16"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีเทาสเลต" style="background:#64748b"></button> 
+          <button class="theme-swatch canva-button" type="button" aria-label="สีคราม" style="background:#4f46e5"></button>
+        </div>
+        <button id="themeCustomBtn" class="theme-custom canva-button" type="button">กำหนดเอง</button>
+        <div id="themeColorWheel" class="theme-color-wheel" role="application" tabindex="0" aria-label="วงล้อเลือกสีธีม">
+         <canvas id="themeColorCanvas" width="132" height="132"></canvas>
+        </div>
+        
+        <div class="controls-wrapper">
+          <div class="slider-row">
+            <div class="slider-container">
+              <input type="range" id="lightnessSlider" class="theme-slider" min="0" max="100" value="50" aria-label="ปรับความเข้มความสว่าง">
+              <input type="range" id="hueSlider" class="theme-slider" min="0" max="360" value="0" aria-label="แถบสีรุ้ง">
+            </div>
+            <button id="textColorToggleBtn" class="text-mode-btn" type="button" title="สลับโหมดเปลี่ยนสีตัวอักษร" aria-label="สลับโหมดเปลี่ยนสีตัวอักษร">
+              <span class="text-icon-a">A</span>
+              <div class="mini-spectrum-v"></div>
+            </button>
+          </div>
+        </div>
+
+        <button id="themeBackBtn" class="theme-back canva-button" type="button">‹ กลับ</button>
+       </section>
+
+       <section id="musicView" class="music-view" aria-label="หน้าเลือกเพลง">
+        <div class="music-view-header">
+         <h2 data-template-id="music-view-title" class="music-view-title canva-text">เลือกเพลง</h2><i data-lucide="music-2"></i>
+        </div>
+        <div class="music-empty-msg">ขออภัย ระบบยังไม่สมบูรณ์</div>
+        <button class="music-back canva-button" type="button">‹ กลับ</button>
+       </section>
+
+       <!-- Alarm View -->
+       <section id="alarmView" class="tool-view" aria-label="ตั้งค่าแจ้งเตือนเวลา">
+        <div class="tool-view-header">
+         <h2 class="tool-view-title">ตั้งค่าแจ้งเตือนเวลา</h2><i data-lucide="alarm-clock"></i>
+        </div>
+        <div id="alarmContent" class="tool-content">
+          <div id="alarmListView" style="display: flex; flex-direction: column; width: 100%; height: 100%;">
+            <div id="alarmList" class="alarm-list"></div>
+          </div>
+
+          <div id="alarmFormView" style="display: none; flex-direction: column; align-items: center; gap: 12px; width: 100%;">
+            <div class="picker-container">
+              <div class="picker-column">
+                <button type="button" class="picker-btn" id="hourUp"><i data-lucide="chevron-up"></i></button>
+                <input type="number" id="alarmHourInput" class="picker-val" min="0" max="23" value="08">
+                <button type="button" class="picker-btn" id="hourDown"><i data-lucide="chevron-down"></i></button>
+              </div>
+              <span style="font-size: 1.5rem; font-weight: bold;">:</span>
+              <div class="picker-column">
+                <button type="button" class="picker-btn" id="minUp"><i data-lucide="chevron-up"></i></button>
+                <input type="number" id="alarmMinInput" class="picker-val" min="0" max="59" value="00">
+                <button type="button" class="picker-btn" id="minDown"><i data-lucide="chevron-down"></i></button>
+              </div>
+              <!-- เพิ่ม น. เข้าไปในส่วนแจ้งเตือนเวลา -->
+              <span style="font-size: 1.2rem; font-weight: bold; margin-left: 4px;">น.</span>
+            </div>
+            <input type="text" id="alarmNameInput" class="alarm-label-input" placeholder="ชื่อการแจ้งเตือน (ตัวอย่าง: ตื่นนอน)">
+            <div class="form-actions">
+              <button id="saveAlarmBtn" class="btn-save" type="button">บันทึก</button>
+              <button id="cancelAlarmBtn" class="btn-cancel" type="button">ยกเลิก</button>
+            </div>
+          </div>
+        </div>
+        <div class="alarm-footer">
+          <button id="alarmBackBtn" class="theme-back" type="button">‹ กลับ</button>
+          <button id="addAlarmPlusBtn" class="add-alarm-btn" type="button" title="เพิ่มนาฬิกาปลุก"><i data-lucide="plus"></i></button>
+        </div>
+       </section>
+
+       <!-- Timer View -->
+       <section id="timerView" class="tool-view" aria-label="จับเวลา">
+        <div class="tool-view-header">
+         <h2 class="tool-view-title">จับเวลา</h2><i data-lucide="timer"></i>
+        </div>
+        <div class="tool-content">
+         <div class="timer-display-box" id="timerLocalDisplay">00:00:00</div>
+         <div class="btn-group">
+          <button id="lapTimerBtn" class="tool-action-btn" type="button" style="display:none;">รอบ</button>
+          <button id="startTimerBtn" class="tool-action-btn" type="button">เริ่ม</button>
+         </div>
+         <div id="lapsList" style="max-height: 100px; overflow-y: auto; width: 100%; font-size: 0.8rem; text-align: center; margin-top: 8px;"></div>
+        </div>
+        <button id="timerBackBtn" class="theme-back" type="button">‹ กลับ</button>
+       </section>
+
+       <!-- Countdown View & Pomodoro -->
+       <section id="countdownView" class="tool-view" aria-label="นับถอยหลัง">
+        <div class="tool-view-header">
+         <h2 class="tool-view-title" id="cdHeaderTitle">นับถอยหลัง</h2><i data-lucide="hourglass"></i>
+        </div>
+        <div class="tool-content">
+         <!-- Normal Countdown Input View -->
+         <div id="normalCdView" style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+           <div class="tool-inputs" style="display:flex; gap:8px; align-items:center;">
+            <div class="input-unit-group">
+              <input type="number" id="cdHour" class="tool-input" min="0" max="23" placeholder="HH" value="00" style="width:45px; text-align:center; background:rgba(30,41,59,0.25); border:1px solid var(--dynamic-border-color); color:inherit; border-radius:4px;">
+              <span>ชั่วโมง</span>
+            </div> :
+            <div class="input-unit-group">
+              <input type="number" id="cdMin" class="tool-input" min="0" max="59" placeholder="MM" value="05" style="width:45px; text-align:center; background:rgba(30,41,59,0.25); border:1px solid var(--dynamic-border-color); color:inherit; border-radius:4px;">
+              <span>นาที</span>
+            </div> :
+            <div class="input-unit-group">
+              <input type="number" id="cdSec" class="tool-input" min="0" max="59" placeholder="SS" value="00" style="width:45px; text-align:center; background:rgba(30,41,59,0.25); border:1px solid var(--dynamic-border-color); color:inherit; border-radius:4px;">
+              <span>วินาที</span>
+            </div>
+           </div>
+           <button id="startCountdownBtn" class="tool-action-btn" type="button">เริ่ม</button>
+         </div>
+
+         <!-- Active Running View -->
+         <div id="activeCdControls" style="display:none; flex-direction:column; align-items:center; gap:8px;">
+           <div class="timer-display-box" id="cdLocalDisplay">00:00:00</div>
+           <div class="btn-group">
+             <button id="resetCdBtn" class="tool-action-btn" type="button">รีเซ็ต</button>
+             <button id="pauseCdBtn" class="tool-action-btn" type="button">พัก</button>
+           </div>
+         </div>
+
+         <!-- Pomodoro Custom View (เพิ่มหน่วยวินาที) -->
+         <div id="pomoView" style="display:none; flex-direction:column; gap:10px; width:100%;">
+           <div style="border: 1px solid var(--dynamic-border-color); padding: 8px; border-radius: 6px; background: rgba(30, 41, 59, 0.25);">
+             <div style="display:flex; justify-content:space-between; align-items:center;">
+               <span id="pomoWorkTitle" style="font-size:0.85rem; font-weight:bold; cursor:pointer;" title="คลิกเพื่อแก้ไขชื่อ">กิจกรรม ✏️</span>
+               <span style="font-size:0.75rem;">รอบ: <span id="pomoWorkRounds">0</span></span>
+             </div>
+             <div id="pomoWorkEditBox" style="display:none; gap:4px; margin-top:4px;">
+               <input type="text" id="pomoWorkInput" value="กิจกรรม" style="flex:1; font-size:0.8rem; background:transparent; color:inherit; border:1px solid var(--dynamic-border-color); padding:2px 4px; border-radius:4px;">
+               <button id="pomoWorkConfirm" style="font-size:0.7rem; background:transparent; border:1px solid var(--dynamic-border-color); color:inherit; padding:2px 6px; border-radius:4px; font-weight:bold;">ยืนยัน</button>
+               <button id="pomoWorkCancel" style="font-size:0.7rem; background:transparent; border:1px solid var(--dynamic-border-color); color:inherit; padding:2px 6px; border-radius:4px;">ยกเลิก</button>
+             </div>
+             <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+               <div class="input-unit-group">
+                 <input type="number" id="pomoWorkH" value="00" min="0" max="23" style="width:35px; background:transparent; border:1px solid var(--dynamic-border-color); color:inherit; text-align:center; font-size:0.8rem;">
+                 <span>ชม.</span>
+               </div>:
+               <div class="input-unit-group">
+                 <input type="number" id="pomoWorkM" value="25" min="0" max="59" style="width:35px; background:transparent; border:1px solid var(--dynamic-border-color); color:inherit; text-align:center; font-size:0.8rem;">
+                 <span>นาที</span>
+               </div>:
+               <div class="input-unit-group">
+                 <input type="number" id="pomoWorkS" value="00" min="0" max="59" style="width:35px; background:transparent; border:1px solid var(--dynamic-border-color); color:inherit; text-align:center; font-size:0.8rem;">
+                 <span>วินาที</span>
+               </div>
+             </div>
+           </div>
+
+           <div style="border: 1px solid var(--dynamic-border-color); padding: 8px; border-radius: 6px; background: rgba(30, 41, 59, 0.25);">
+             <div style="display:flex; justify-content:space-between; align-items:center;">
+               <span style="font-size:0.85rem; font-weight:bold;">พัก</span>
+               <span style="font-size:0.75rem;">รอบ: <span id="pomoBreakRounds">0</span></span>
+             </div>
+             <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+               <div class="input-unit-group">
+                 <input type="number" id="pomoBreakH" value="00" min="0" max="23" style="width:35px; background:transparent; border:1px solid var(--dynamic-border-color); color:inherit; text-align:center; font-size:0.8rem;">
+                 <span>ชม.</span>
+               </div>:
+               <div class="input-unit-group">
+                 <input type="number" id="pomoBreakM" value="05" min="0" max="59" style="width:35px; background:transparent; border:1px solid var(--dynamic-border-color); color:inherit; text-align:center; font-size:0.8rem;">
+                 <span>นาที</span>
+               </div>:
+               <div class="input-unit-group">
+                 <input type="number" id="pomoBreakS" value="00" min="0" max="59" style="width:35px; background:transparent; border:1px solid var(--dynamic-border-color); color:inherit; text-align:center; font-size:0.8rem;">
+                 <span>วินาที</span>
+               </div>
+             </div>
+           </div>
+           
+           <button id="startPomoBtn" class="tool-action-btn" type="button" style="width:100%;">เริ่ม Pomodoro</button>
+         </div>
+        </div>
+        <div class="alarm-footer">
+          <button id="countdownBackBtn" class="theme-back" type="button">‹ กลับ</button>
+          <button id="pomoToggleBtn" class="theme-back" type="button" style="color:inherit; border-color:var(--dynamic-border-color);">Pomodoro</button>
+        </div>
+       </section>
+
+      </section>
+
+      <!-- โซนล่างขวา -->
+      <div class="right-bottom-container">
+        <section data-template-id="app-name" class="right-slot-3 canva-panel" style="font-weight: 700; font-size: 16px;">LikeLEARN</section>
+      </div>
+     </div>
+     <button id="handleRight" class="toggle-handle toggle-handle-right" type="button" aria-label="เปิดหรือปิดแผงด้านขวา"> <i id="rightIcon" data-lucide="chevron-left"></i> </button>
+    </aside>
+   </main>
+  </div>
+
+  <script>
+    const thaiMonths = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+
+    let scheduleEventsList = [];
+    let editingIndex = -1;
+    const ROW_HEIGHT = 48;
+
+    function formatTimePad(h, m) {
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    function buildScrollableCalendar() {
+      const container = document.getElementById("calendarScrollContainer");
+      container.innerHTML = "";
+
+      const timelineWrapper = document.createElement("div");
+      timelineWrapper.className = "timeline-container";
+      timelineWrapper.style.height = (24 * ROW_HEIGHT) + "px";
+
+      for (let hour = 0; hour < 24; hour += 1) {
+        const label = hour === 0 ? "12 AM" : hour < 12 ? hour + " AM" : hour === 12 ? "12 PM" : hour - 12 + " PM";
+        const row = document.createElement("div");
+        row.className = "calendar-row";
+        row.style.position = "absolute";
+        row.style.top = (hour * ROW_HEIGHT) + "px";
+        row.style.left = "0";
+        row.style.right = "0";
+        row.innerHTML = `<span class="calendar-time-label">${label}</span><div class="calendar-blank-grid" onclick="openAddEventFormWithTime(${hour}, 0)"></div>`;
+        timelineWrapper.appendChild(row);
+      }
+
+      scheduleEventsList.forEach((ev, idx) => {
+        const startTotalMin = ev.startHour * 60 + ev.startMin;
+        let endTotalMin = ev.endHour * 60 + ev.endMin;
+        if (endTotalMin <= startTotalMin) {
+          endTotalMin = 24 * 60;
+        }
+
+        const topPx = (startTotalMin / 60) * ROW_HEIGHT;
+        const heightPx = Math.max(((endTotalMin - startTotalMin) / 60) * ROW_HEIGHT, 24);
+
+        const evBox = document.createElement("div");
+        evBox.className = "event-block";
+        evBox.style.top = topPx + "px";
+        evBox.style.height = heightPx + "px";
+        evBox.style.backgroundColor = ev.color || "#38bdf8";
+
+        const timeString = `${formatTimePad(ev.startHour, ev.startMin)} - ${formatTimePad(ev.endHour, ev.endMin)} น.`;
+
+        evBox.innerHTML = `
+          <div class="event-title-text">${ev.title}</div>
+          <div class="event-time-text">${timeString}</div>
+        `;
+
+        evBox.onclick = (e) => {
+          e.stopPropagation();
+          editScheduleEventByIndex(idx);
+        };
+
+        timelineWrapper.appendChild(evBox);
+      });
+
+      container.appendChild(timelineWrapper);
+    }
+
+    window.openAddEventFormWithTime = function(hour, min) {
+      editingIndex = -1;
+      openAddEventForm(hour, min);
+    };
+
+    window.editScheduleEventByIndex = function(idx) {
+      editingIndex = idx;
+      const ev = scheduleEventsList[idx];
+      todayModalView.classList.add("is-visible");
+      addEventForm.style.display = "flex";
+      eventTitleInput.value = ev.title;
+      eventStartHour.value = ev.startHour;
+      eventStartMin.value = ev.startMin;
+      eventEndHour.value = ev.endHour;
+      eventEndMin.value = ev.endMin;
+      eventColorInput.value = ev.color || "#38bdf8";
+    };
+
+    // Elements
+    const leftWrapper = document.getElementById("sidebarLeftWrapper");
+    const rightWrapper = document.getElementById("sidebarRightWrapper");
+    const handleLeft = document.getElementById("handleLeft");
+    const handleRight = document.getElementById("handleRight");
+    const uiToggleBtn = document.getElementById("uiToggleBtn");
+    const floatingUiToggleBtn = document.getElementById("floatingUiToggleBtn");
+    const musicBtn = document.getElementById("musicBtn");
+    const profileBtn = document.getElementById("profileBtn");
+    const musicView = document.getElementById("musicView");
+    const themeView = document.getElementById("themeView");
+    const profilePanel = document.querySelector('[data-template-id="right-profile-panel"]');
+    const profileGrid = profilePanel.querySelector('.right-grid-container');
+    const musicFeatureBtn = document.querySelector('[data-template-id="feature-music"]');
+    const themeFeatureBtn = document.querySelector('[data-template-id="feature-theme"]');
+    const themeBackBtn = document.getElementById("themeBackBtn");
+    const themeCustomBtn = document.getElementById("themeCustomBtn");
+    const themeColorWheel = document.getElementById("themeColorWheel");
+    const themeColorCanvas = document.getElementById("themeColorCanvas");
+    const themeColorContext = themeColorCanvas.getContext("2d");
+    const themeSwatches = document.querySelectorAll(".theme-swatch");
+    const selectedDefaultTheme = document.querySelector('[data-template-id="theme-default"]');
+    const musicBackBtn = document.querySelector('.music-back');
+
+    // Tool Views
+    const alarmView = document.getElementById("alarmView");
+    const timerView = document.getElementById("timerView");
+    const countdownView = document.getElementById("countdownView");
+    const coinsView = document.getElementById("coinsView");
+    const shopView = document.getElementById("shopView");
+    
+    const featureAlarm = document.getElementById("featureAlarm");
+    const featureTimer = document.getElementById("featureTimer");
+    const featureCountdown = document.getElementById("featureCountdown");
+    const featureCoins = document.getElementById("featureCoins");
+    const featureHistory = document.getElementById("featureHistory");
+    const createQuestionBtn = document.getElementById("createQuestionBtn");
+    const viewOtherDaysBtn = document.getElementById("viewOtherDaysBtn");
+    
+    const alarmBackBtn = document.getElementById("alarmBackBtn");
+    const timerBackBtn = document.getElementById("timerBackBtn");
+    const countdownBackBtn = document.getElementById("countdownBackBtn");
+    const coinsBackBtn = document.getElementById("coinsBackBtn");
+    const cartBtn = document.getElementById("cartBtn");
+    const shopBackBtn = document.getElementById("shopBackBtn");
+
+    // Alarm States
+    let alarms = [];
+    const alarmListView = document.getElementById("alarmListView");
+    const alarmFormView = document.getElementById("alarmFormView");
+    const addAlarmPlusBtn = document.getElementById("addAlarmPlusBtn");
+    const alarmHourInput = document.getElementById("alarmHourInput");
+    const alarmMinInput = document.getElementById("alarmMinInput");
+    const alarmNameInput = document.getElementById("alarmNameInput");
+    const alarmList = document.getElementById("alarmList");
+
+    // Mode States
+    let activeToolMode = 'clock'; 
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let timerRunning = false;
+    let lapCount = 0;
+
+    let countdownInterval = null;
+    let countdownTotalSeconds = 0;
+    let countdownRemainingSeconds = 0;
+    let countdownRunning = false;
+    let isPomodoro = false;
+
+    // Pomodoro States
+    let pomoState = 'work';
+    let pomoWorkRoundsCount = 0;
+    let pomoBreakRoundsCount = 0;
+
+    // Coins System States
+    let coins = 0;
+    let accumulatedSeconds = 0;
+
+    // Color States
+    const lightnessSlider = document.getElementById("lightnessSlider");
+    const hueSlider = document.getElementById("hueSlider");
+    const textColorToggleBtn = document.getElementById("textColorToggleBtn");
+
+    let isTextColorMode = false;
+    let customTextColor = null;
+    let currentBaseThemeColor = "#0f172a";
+
+    // Unfinished feature alerts
+    [featureHistory, createQuestionBtn, viewOtherDaysBtn].forEach(btn => {
+      if(btn) {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          alert("ขออภัย ระบบยังไม่สมบูรณ์");
+        });
+      }
+    });
+
+    const leftNoteText = document.getElementById("leftNoteText");
+    function updateStatusText() {
+      if (activeToolMode === 'clock') {
+        leftNoteText.textContent = "ขณะนี้อยู่ในโหมดปกติ";
+      } else if (activeToolMode === 'alarm') {
+        leftNoteText.textContent = "ขณะนี้กำลังใช้ แจ้งเตือนเวลา";
+      } else if (activeToolMode === 'timer') {
+        leftNoteText.textContent = "ขณะนี้กำลังใช้ จับเวลา";
+      } else if (activeToolMode === 'countdown') {
+        leftNoteText.textContent = isPomodoro ? "ขณะนี้กำลังใช้ Pomodoro" : "ขณะนี้กำลังใช้ นับถอยหลัง";
+      }
+    }
+
+    // Today Schedule Modal Controls & Form
+    const viewTodayBtn = document.getElementById("viewTodayBtn");
+    const todayModalView = document.getElementById("todayModalView");
+    const closeTodayModalBtn = document.getElementById("closeTodayModalBtn");
+    const todayEventsList = document.getElementById("todayEventsList");
+    const addEventModalBtn = document.getElementById("addEventModalBtn");
+    const addEventForm = document.getElementById("addEventForm");
+    
+    const eventTitleInput = document.getElementById("eventTitleInput");
+    const eventStartHour = document.getElementById("eventStartHour");
+    const eventStartMin = document.getElementById("eventStartMin");
+    const eventEndHour = document.getElementById("eventEndHour");
+    const eventEndMin = document.getElementById("eventEndMin");
+    const eventColorInput = document.getElementById("eventColorInput");
+    const cancelEventFormBtn = document.getElementById("cancelEventFormBtn");
+    const saveEventFormBtn = document.getElementById("saveEventFormBtn");
+
+    for(let i=0; i<24; i++) {
+      const opt1 = document.createElement("option"); opt1.value = i; opt1.textContent = String(i).padStart(2,'0');
+      const opt2 = document.createElement("option"); opt2.value = i; opt2.textContent = String(i).padStart(2,'0');
+      eventStartHour.appendChild(opt1);
+      eventEndHour.appendChild(opt2);
+    }
+    for(let i=0; i<60; i+=5) {
+      const opt1 = document.createElement("option"); opt1.value = i; opt1.textContent = String(i).padStart(2,'0');
+      const opt2 = document.createElement("option"); opt2.value = i; opt2.textContent = String(i).padStart(2,'0');
+      eventStartMin.appendChild(opt1);
+      eventEndMin.appendChild(opt2);
+    }
+
+    viewTodayBtn.addEventListener("click", () => {
+      renderTodayEventsModal();
+      addEventForm.style.display = "none";
+      todayModalView.classList.add("is-visible");
+    });
+
+    closeTodayModalBtn.addEventListener("click", () => {
+      todayModalView.classList.remove("is-visible");
+    });
+
+    addEventModalBtn.addEventListener("click", () => {
+      editingIndex = -1;
+      openAddEventForm(0, 0);
+    });
+
+    function openAddEventForm(startH, startM) {
+      todayModalView.classList.add("is-visible");
+      addEventForm.style.display = "flex";
+      eventStartHour.value = startH;
+      eventStartMin.value = startM || 0;
+      eventEndHour.value = (startH + 1) % 24;
+      eventEndMin.value = startM || 0;
+      eventTitleInput.value = "";
+      eventColorInput.value = "#38bdf8";
+    }
+
+    cancelEventFormBtn.addEventListener("click", () => {
+      addEventForm.style.display = "none";
+      editingIndex = -1;
+    });
+
+    saveEventFormBtn.addEventListener("click", () => {
+      const title = eventTitleInput.value.trim();
+      const sH = parseInt(eventStartHour.value);
+      const sM = parseInt(eventStartMin.value);
+      const eH = parseInt(eventEndHour.value);
+      const eM = parseInt(eventEndMin.value);
+      const color = eventColorInput.value;
+
+      if (!title) {
+        alert("กรุณาระบุชื่อกิจกรรม");
+        return;
+      }
+
+      const newEvent = { title, startHour: sH, startMin: sM, endHour: eH, endMin: eM, color };
+
+      if (editingIndex >= 0) {
+        scheduleEventsList[editingIndex] = newEvent;
+      } else {
+        scheduleEventsList.push(newEvent);
+      }
+
+      scheduleEventsList.sort((a, b) => (a.startHour * 60 + a.startMin) - (b.startHour * 60 + b.startMin));
+
+      buildScrollableCalendar();
+      renderTodayEventsModal();
+      addEventForm.style.display = "none";
+      editingIndex = -1;
+    });
+
+    function renderTodayEventsModal() {
+      todayEventsList.innerHTML = "";
+      if (scheduleEventsList.length === 0) {
+        todayEventsList.innerHTML = '<div style="font-size:0.8rem; text-align:center; padding:12px;">ยังไม่มีกิจกรรมบันทึกไว้</div>';
+        return;
+      }
+
+      scheduleEventsList.forEach((ev, idx) => {
+        const item = document.createElement("div");
+        item.style.cssText = `display:flex; justify-content:space-between; align-items:center; background:rgba(30,41,59,0.4); padding:6px 8px; border-radius:6px; font-size:0.8rem; border:1px solid var(--dynamic-border-color); border-left: 4px solid ${ev.color};`;
+        const timeStr = `${formatTimePad(ev.startHour, ev.startMin)} - ${formatTimePad(ev.endHour, ev.endMin)} น.`;
+        item.innerHTML = `
+          <div>
+            <div style="font-weight:bold; font-size: 0.85rem;">${ev.title}</div>
+            <div style="font-size: 0.75rem; opacity:0.8; margin-top:2px;">${timeStr}</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button onclick="editScheduleEventByIndex(${idx})" style="color:inherit; background:transparent; border:none; cursor:pointer;">แก้ไข</button>
+            <button onclick="deleteScheduleEventByIndex(${idx})" style="color:#ef4444; background:transparent; border:none; cursor:pointer;">ลบ</button>
+          </div>
+        `;
+        todayEventsList.appendChild(item);
+      });
+    }
+
+    window.deleteScheduleEventByIndex = function(idx) {
+      scheduleEventsList.splice(idx, 1);
+      buildScrollableCalendar();
+      renderTodayEventsModal();
+    };
+
+    function hideAllViews() {
+      musicView.classList.remove("is-visible");
+      themeView.classList.remove("is-visible");
+      alarmView.classList.remove("is-visible");
+      timerView.classList.remove("is-visible");
+      countdownView.classList.remove("is-visible");
+      coinsView.classList.remove("is-visible");
+      shopView.classList.remove("is-visible");
+    }
+
+    function showToolView(view) {
+      profileGrid.classList.add("hidden");
+      hideAllViews();
+      view.classList.add("is-visible");
+    }
+
+    function hideToolView() {
+      hideAllViews();
+      profileGrid.classList.remove("hidden");
+    }
+
+    featureCoins.addEventListener("click", (e) => { e.stopPropagation(); showToolView(coinsView); updateCoinUI(); });
+    cartBtn.addEventListener("click", (e) => { e.stopPropagation(); showToolView(shopView); renderFontShop(); });
+    shopBackBtn.addEventListener("click", (e) => { e.stopPropagation(); showToolView(coinsView); });
+    coinsBackBtn.addEventListener("click", (e) => { e.stopPropagation(); hideToolView(); });
+
+    featureAlarm.addEventListener("click", (e) => { 
+      e.stopPropagation(); 
+      showToolView(alarmView); 
+      showAlarmList(); 
+      activeToolMode = 'alarm'; 
+      updateStatusText(); 
+    });
+    featureTimer.addEventListener("click", (e) => { 
+      e.stopPropagation(); 
+      showToolView(timerView); 
+      activeToolMode = 'timer'; 
+      updateTimeDisplay(); 
+      updateStatusText(); 
+    });
+    featureCountdown.addEventListener("click", (e) => { 
+      e.stopPropagation(); 
+      showToolView(countdownView); 
+      activeToolMode = 'countdown'; 
+      updateTimeDisplay(); 
+      updateStatusText(); 
+    });
+
+    alarmBackBtn.addEventListener("click", (e) => { e.stopPropagation(); hideToolView(); activeToolMode = 'clock'; updateStatusText(); });
+    timerBackBtn.addEventListener("click", (e) => { e.stopPropagation(); hideToolView(); activeToolMode = 'clock'; updateTimeDisplay(); updateStatusText(); });
+    countdownBackBtn.addEventListener("click", (e) => { e.stopPropagation(); hideToolView(); activeToolMode = 'clock'; updateTimeDisplay(); updateStatusText(); });
+
+// ตัวแปรสำหรับปลดล็อกระบบเสียง
+let globalAudioCtx = null;
+
+function unlockAudioContext() {
+  if (!globalAudioCtx) {
+    globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (globalAudioCtx.state === 'suspended') {
+    globalAudioCtx.resume();
+  }
+  return globalAudioCtx;
+}
+
+function playBeepSoundFiveTimes() {
+  let ctx = unlockAudioContext();
+  let beepCount = 0;
+  
+  let interval = setInterval(() => {
+    if (beepCount >= 5) {
+      clearInterval(interval);
+      return;
+    }
+    let osc = ctx.createOscillator();
+    let gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+    beepCount++;
+  }, 300);
+}
+
+    function renderAlarms() {
+      alarmList.innerHTML = "";
+      if (alarms.length === 0) {
+        alarmList.innerHTML = '<div style="text-align: center; font-size: 0.85rem; padding: 12px;">ยังไม่มีการตั้งนาฬิกาปลุก</div>';
+        return;
+      }
+      alarms.forEach((alarm, index) => {
+        const item = document.createElement("div");
+        item.className = "alarm-item";
+        item.innerHTML = `
+          <div>
+            <div style="font-size: 1rem; font-weight: bold;">${alarm.time} น.</div>
+            <div style="font-size: 0.75rem;">${alarm.name || 'นาฬิกาปลุก'}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label class="switch">
+              <input type="checkbox" ${alarm.active ? 'checked' : ''} onchange="toggleAlarmActive(${index})">
+              <span class="slider"></span>
+            </label>
+            <button type="button" onclick="deleteAlarm(${index})" style="color: #ef4444; background: transparent; border: none; cursor: pointer;"><i data-lucide="trash-2"></i></button>
+          </div>
+        `;
+        alarmList.appendChild(item);
+      });
+      refreshIcons();
+    }
+
+    window.toggleAlarmActive = function(index) { alarms[index].active = !alarms[index].active; };
+    window.deleteAlarm = function(index) { alarms.splice(index, 1); renderAlarms(); };
+
+    function showAlarmList() {
+      alarmListView.style.display = "flex";
+      alarmFormView.style.display = "none";
+      addAlarmPlusBtn.style.display = "flex";
+      renderAlarms();
+    }
+
+    function showAlarmForm() {
+      alarmListView.style.display = "none";
+      alarmFormView.style.display = "flex";
+      addAlarmPlusBtn.style.display = "none";
+    }
+
+    addAlarmPlusBtn.addEventListener("click", showAlarmForm);
+    document.getElementById("cancelAlarmBtn").addEventListener("click", showAlarmList);
+
+    document.getElementById("hourUp").addEventListener("click", () => {
+      let val = (parseInt(alarmHourInput.value) || 0) + 1;
+      alarmHourInput.value = String(val > 23 ? 0 : val).padStart(2, '0');
+    });
+    document.getElementById("hourDown").addEventListener("click", () => {
+      let val = (parseInt(alarmHourInput.value) || 0) - 1;
+      alarmHourInput.value = String(val < 0 ? 23 : val).padStart(2, '0');
+    });
+    document.getElementById("minUp").addEventListener("click", () => {
+      let val = (parseInt(alarmMinInput.value) || 0) + 1;
+      alarmMinInput.value = String(val > 59 ? 0 : val).padStart(2, '0');
+    });
+    document.getElementById("minDown").addEventListener("click", () => {
+      let val = (parseInt(alarmMinInput.value) || 0) - 1;
+      alarmMinInput.value = String(val < 0 ? 59 : val).padStart(2, '0');
+    });
+
+    document.getElementById("saveAlarmBtn").addEventListener("click", () => {
+      let h = parseInt(alarmHourInput.value) || 0;
+      let m = parseInt(alarmMinInput.value) || 0;
+      const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      alarms.push({
+        time: timeStr,
+        name: alarmNameInput.value.trim(),
+        active: true
+      });
+      alarmNameInput.value = "";
+      showAlarmList();
+    });
+
+    // --- COINS & FONT SHOP SYSTEM ---
+    const availableFonts = [
+      { name: "Kanit", font: "'Kanit', sans-serif" },
+      { name: "Prompt", font: "'Prompt', sans-serif" },
+      { name: "Sarabun", font: "'Sarabun', sans-serif" },
+      { name: "Chakra Petch", font: "'Chakra Petch', sans-serif" },
+      { name: "Krub", font: "'Krub', sans-serif" },
+      { name: "Mitr", font: "'Mitr', sans-serif" },
+      { name: "Pattaya", font: "'Pattaya', cursive" },
+      { name: "Taviraj", font: "'Taviraj', serif" },
+      { name: "Trirong", font: "'Trirong', serif" },
+      { name: "Niramit", font: "'Niramit', sans-serif" },
+      { name: "Itim", font: "'Itim', cursive" },
+      { name: "Srisakdi", font: "'Srisakdi', cursive" },
+      { name: "Chonburi", font: "'Chonburi', cursive" },
+      { name: "Charm", font: "'Charm', cursive" }
+    ];
+
+    let purchasedFonts = [];
+    let activeFontName = "Mali"; 
+
+    function updateCoinUI() {
+      document.getElementById("coinBalanceDisplay").textContent = coins;
+      const m = String(Math.floor(accumulatedSeconds / 60)).padStart(2, '0');
+      const s = String(accumulatedSeconds % 60).padStart(2, '0');
+      document.getElementById("accumulatedTimeDisplay").textContent = `${m}:${s}`;
+    }
+
+    document.getElementById("convertCoinBtn").addEventListener("click", () => {
+      const exchangeAmount = parseInt(document.getElementById("coinExchangeInput").value) || 0;
+      if (exchangeAmount <= 0) {
+        alert("กรุณาระบุจำนวนที่ต้องการแลก");
+        return;
+      }
+      
+      const requiredSeconds = exchangeAmount * 300;
+      
+      if (accumulatedSeconds >= requiredSeconds) {
+        coins += exchangeAmount;
+        accumulatedSeconds -= requiredSeconds;
+        updateCoinUI();
+        alert(`คุณได้รับ ${exchangeAmount} คอยน์!`);
+      } else {
+        alert(`ยังสะสมเวลาไม่พอสำหรับ ${exchangeAmount} คอยน์ (ต้องการอีก ${requiredSeconds - accumulatedSeconds} วินาที)`);
+      }
+    });
+
+    function renderFontShop() {
+      const shopContainer = document.getElementById("fontShopContainer");
+      shopContainer.innerHTML = "";
+
+      availableFonts.forEach((f) => {
+        const isBought = purchasedFonts.includes(f.name);
+        const isActive = activeFontName === f.name;
+
+        const card = document.createElement("div");
+        card.className = `font-card ${isActive ? 'is-active-font' : ''}`;
+        
+        card.innerHTML = `
+          <div class="font-preview-box">
+            <span class="font-name-title" style="font-family: ${f.font};">${f.name}</span>
+            <span class="font-sample-text" style="font-family: ${f.font};">01:23:45 ตัวอย่างฟอนต์</span>
+          </div>
+          <div>
+            ${
+              isBought 
+                ? `<span style="font-size: 0.75rem; color:#38bdf8; font-weight:bold;">${isActive ? 'กำลังใช้' : 'เจ้าของแล้ว'}</span>`
+                : `<button class="tool-action-btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="buyFont('${f.name}', event)">ซื้อ 5 คอยน์</button>`
+            }
+          </div>
+        `;
+
+        card.addEventListener("click", () => {
+          if (purchasedFonts.includes(f.name)) {
+            toggleFontUsage(f.name);
+          }
+        });
+
+        shopContainer.appendChild(card);
+      });
+    }
+
+    window.buyFont = function(fontName, e) {
+      e.stopPropagation();
+      if (coins >= 5) {
+        coins -= 5;
+        purchasedFonts.push(fontName);
+        updateCoinUI();
+        toggleFontUsage(fontName);
+        renderFontShop();
+      } else {
+        alert("คอยน์ไม่เพียงพอ (ต้องการ 5 คอยน์)");
+      }
+    };
+
+    function toggleFontUsage(fontName) {
+      if (activeFontName === fontName) {
+        activeFontName = "Mali";
+        document.documentElement.style.setProperty('--app-font-family', "'Mali', cursive, sans-serif");
+      } else {
+        activeFontName = fontName;
+        const selectedObj = availableFonts.find(f => f.name === fontName);
+        if (selectedObj) {
+          document.documentElement.style.setProperty('--app-font-family', selectedObj.font);
+        }
+      }
+      renderFontShop();
+    }
+
+    // --- TIMER SYSTEM ---
+    const startTimerBtn = document.getElementById("startTimerBtn");
+    const lapTimerBtn = document.getElementById("lapTimerBtn");
+    const lapsList = document.getElementById("lapsList");
+    const timerLocalDisplay = document.getElementById("timerLocalDisplay");
+
+    startTimerBtn.addEventListener("click", () => {
+      if (!timerRunning) {
+        timerRunning = true;
+        startTimerBtn.textContent = "หยุด";
+        lapTimerBtn.style.display = "inline-block";
+        lapTimerBtn.textContent = "รอบ";
+        timerInterval = setInterval(() => {
+          timerSeconds++;
+          accumulatedSeconds++;
+          updateTimeDisplay();
+        }, 1000);
+      } else {
+        timerRunning = false;
+        clearInterval(timerInterval);
+        startTimerBtn.textContent = "เริ่ม";
+        lapTimerBtn.textContent = "รีเซ็ต";
+      }
+    });
+
+    lapTimerBtn.addEventListener("click", () => {
+      if (timerRunning) {
+        lapCount++;
+        const item = document.createElement("div");
+        item.textContent = `รอบที่ ${lapCount} - ${formatTimeHMS(timerSeconds)}`;
+        lapsList.prepend(item);
+      } else {
+        timerSeconds = 0;
+        lapCount = 0;
+        lapsList.innerHTML = "";
+        lapTimerBtn.style.display = "none";
+        updateTimeDisplay();
+      }
+    });
+
+    function formatTimeHMS(totalSec) {
+      const h = String(Math.floor(totalSec / 3600)).padStart(2, "0");
+      const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
+      const s = String(totalSec % 60).padStart(2, "0");
+      return `${h}:${m}:${s}`;
+    }
+
+    function formatCountdownDynamic(totalSec) {
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+
+      if (h > 0) {
+        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      } else if (m > 0) {
+        return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+      } else {
+        return `${String(s).padStart(2, "0")}`;
+      }
+    }
+
+    // --- COUNTDOWN & POMODORO SYSTEM ---
+    const pomoToggleBtn = document.getElementById("pomoToggleBtn");
+    const pomoView = document.getElementById("pomoView");
+    const normalCdView = document.getElementById("normalCdView");
+    const activeCdControls = document.getElementById("activeCdControls");
+    const cdHeaderTitle = document.getElementById("cdHeaderTitle");
+    const pauseCdBtn = document.getElementById("pauseCdBtn");
+    const resetCdBtn = document.getElementById("resetCdBtn");
+
+    pomoToggleBtn.addEventListener("click", () => {
+      isPomodoro = !isPomodoro;
+      if (isPomodoro) {
+        pomoToggleBtn.textContent = "นับถอยหลังปกติ";
+        cdHeaderTitle.textContent = "Pomodoro";
+        normalCdView.style.display = "none";
+        pomoView.style.display = "flex";
+      } else {
+        pomoToggleBtn.textContent = "Pomodoro";
+        cdHeaderTitle.textContent = "นับถอยหลัง";
+        normalCdView.style.display = "flex";
+        pomoView.style.display = "none";
+      }
+      updateStatusText();
+    });
+
+    const pomoWorkTitle = document.getElementById("pomoWorkTitle");
+    const pomoWorkEditBox = document.getElementById("pomoWorkEditBox");
+    const pomoWorkInput = document.getElementById("pomoWorkInput");
+    
+    pomoWorkTitle.addEventListener("click", () => { pomoWorkEditBox.style.display = "flex"; });
+    document.getElementById("pomoWorkCancel").addEventListener("click", () => { pomoWorkEditBox.style.display = "none"; });
+    document.getElementById("pomoWorkConfirm").addEventListener("click", () => {
+      if (pomoWorkInput.value.trim() !== "") {
+        pomoWorkTitle.textContent = pomoWorkInput.value.trim() + " ✏️";
+      }
+      pomoWorkEditBox.style.display = "none";
+    });
+
+    document.getElementById("startCountdownBtn").addEventListener("click", () => {
+  unlockAudioContext(); // <--- เติมบรรทัดนี้
+  const h = parseInt(document.getElementById("cdHour").value) || 0;
+  const m = parseInt(document.getElementById("cdMin").value) || 0;
+  const s = parseInt(document.getElementById("cdSec").value) || 0;
+  countdownTotalSeconds = h * 3600 + m * 60 + s;
+  countdownRemainingSeconds = countdownTotalSeconds;
+  if (countdownTotalSeconds > 0) {
+    startCountdownProcess();
+  }
+});
+
+document.getElementById("startPomoBtn").addEventListener("click", () => {
+  unlockAudioContext(); // <--- เติมบรรทัดนี้
+  pomoState = 'work';
+  setupPomoTime();
+  startCountdownProcess();
+});
+
+    function setupPomoTime() {
+      if (pomoState === 'work') {
+        const h = parseInt(document.getElementById("pomoWorkH").value) || 0;
+        const m = parseInt(document.getElementById("pomoWorkM").value) || 0;
+        const s = parseInt(document.getElementById("pomoWorkS").value) || 0;
+        countdownTotalSeconds = h * 3600 + m * 60 + s;
+      } else {
+        const h = parseInt(document.getElementById("pomoBreakH").value) || 0;
+        const m = parseInt(document.getElementById("pomoBreakM").value) || 0;
+        const s = parseInt(document.getElementById("pomoBreakS").value) || 0;
+        countdownTotalSeconds = h * 3600 + m * 60 + s;
+      }
+      countdownRemainingSeconds = countdownTotalSeconds;
+    }
+
+    function startCountdownProcess() {
+      countdownRunning = true;
+      normalCdView.style.display = "none";
+      pomoView.style.display = "none";
+      activeCdControls.style.display = "flex";
+      pauseCdBtn.textContent = "พัก";
+
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        if (countdownRemainingSeconds > 0) {
+          countdownRemainingSeconds--;
+          accumulatedSeconds++;
+          updateTimeDisplay();
+        } else {
+          clearInterval(countdownInterval);
+          countdownRunning = false;
+          playBeepSoundFiveTimes();
+          setTimeout(() => {
+             if (isPomodoro) {
+               if (pomoState === 'work') {
+                 pomoWorkRoundsCount++;
+                 document.getElementById("pomoWorkRounds").textContent = pomoWorkRoundsCount;
+                 pomoState = 'break';
+               } else {
+                 pomoBreakRoundsCount++;
+                 document.getElementById("pomoBreakRounds").textContent = pomoBreakRoundsCount;
+                 pomoState = 'work';
+               }
+               setupPomoTime();
+               startCountdownProcess();
+             } else {
+               resetCountdownProcess();
+             }
+          }, 1500); // Wait for Beeps to complete
+        }
+      }, 1000);
+    }
+
+    pauseCdBtn.addEventListener("click", () => {
+      if (countdownRunning) {
+        clearInterval(countdownInterval);
+        countdownRunning = false;
+        pauseCdBtn.textContent = "เริ่มต่อ";
+      } else {
+        startCountdownProcess();
+      }
+    });
+
+    resetCdBtn.addEventListener("click", resetCountdownProcess);
+
+    function resetCountdownProcess() {
+      clearInterval(countdownInterval);
+      countdownRunning = false;
+      activeCdControls.style.display = "none";
+      if (isPomodoro) {
+        pomoView.style.display = "flex";
+      } else {
+        normalCdView.style.display = "flex";
+      }
+      updateTimeDisplay();
+    }
+
+    // --- MAIN TIME DISPLAY ---
+    function updateTimeDisplay() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const seconds = String(now.getSeconds()).padStart(2, "0");
+      const timeStr = hours + ":" + minutes + ":" + seconds;
+
+      const clockEl = document.getElementById("clock");
+      const mainCircleWrapper = document.getElementById("mainTimeCircleWrapper");
+      const mainCircleSvg = document.getElementById("mainTimeCircleSvg");
+      const mainCircleProgress = document.getElementById("mainTimeCircleProgress");
+
+      // Check Alarms
+      if (seconds === "00") {
+        const currentTimeHM = `${hours}:${minutes}`;
+        alarms.forEach(alarm => {
+          if (alarm.active && alarm.time === currentTimeHM) {
+            playBeepSoundFiveTimes();
+          }
+        });
+      }
+
+      if (activeToolMode === 'clock' || activeToolMode === 'alarm') {
+        clockEl.textContent = timeStr;
+        mainCircleSvg.style.display = "none";
+      } else if (activeToolMode === 'timer') {
+        const formatted = formatTimeHMS(timerSeconds);
+        clockEl.textContent = formatted;
+        timerLocalDisplay.textContent = formatted;
+        mainCircleSvg.style.display = "none";
+      } else if (activeToolMode === 'countdown') {
+        const formatted = formatCountdownDynamic(countdownRemainingSeconds);
+        clockEl.textContent = formatted;
+        document.getElementById("cdLocalDisplay").textContent = formatted;
+        
+        mainCircleSvg.style.display = "block";
+        
+        const rect = clockEl.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height) + 40;
+        mainCircleWrapper.style.width = size + "px";
+        mainCircleWrapper.style.height = size + "px";
+
+        if (countdownTotalSeconds > 0) {
+          const progress = countdownRemainingSeconds / countdownTotalSeconds;
+          const dashoffset = 282.7 * (1 - progress);
+          mainCircleProgress.style.strokeDashoffset = dashoffset;
+        }
+      }
+
+      const buddhistYear = now.getFullYear() + 543;
+      document.getElementById("dateDisplay").textContent =
+        now.getDate() + "/" + thaiMonths[now.getMonth()] + "/" + buddhistYear;
+      const scheduleDate = document.querySelector('[data-template-id="schedule-date"]');
+      if (scheduleDate) scheduleDate.textContent =
+        "วัน" + ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"][now.getDay()] + "ที่ " + now.getDate() + " " + thaiMonths[now.getMonth()] + " " + buddhistYear;
+
+      const offsetMinutes = -now.getTimezoneOffset();
+      const offsetSign = offsetMinutes >= 0 ? "+" : "-";
+      const offsetHours = String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, "0");
+      const offsetRemaining = String(Math.abs(offsetMinutes) % 60).padStart(2, "0");
+
+      let zoneName = "UTC";
+      try { zoneName = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; } catch (error) {}
+
+      document.getElementById("timezoneDisplay").textContent =
+        "Timezone: " + zoneName + " (UTC" + offsetSign + offsetHours + ":" + offsetRemaining + ") – " + timeStr;
+    }
+
+    // --- THEME & COLOR CUSTOMIZATION ---
+    function resetDefaultTheme() {
+      currentBaseThemeColor = "#0f172a";
+      customTextColor = null;
+      document.documentElement.style.setProperty('--dynamic-text-color', '#ffffff');
+      document.documentElement.style.setProperty('--dynamic-border-color', '#7dd3fc');
+      
+      document.body.style.background = "";
+      document.querySelector(".app-shell").style.background = "";
+
+      const panels = document.querySelectorAll('.top-bar, .sidebar, .left-top, .left-bottom, .right-slot-1, .right-slot-3, .music-view, .theme-view, .tool-view, .today-modal-view');
+      panels.forEach(p => { 
+        if (p) {
+          p.style.background = ""; 
+          p.style.backgroundColor = "";
+        }
+      });
+
+      lightnessSlider.value = 50;
+    }
+
+    function applyCustomTextColor(color) {
+      customTextColor = color;
+      document.documentElement.style.setProperty('--dynamic-text-color', color);
+      document.documentElement.style.setProperty('--dynamic-border-color', color);
+    }
+
+    function applyThemeColor(color, selectedButton) {
+      if (selectedButton === selectedDefaultTheme) {
+        resetDefaultTheme();
+        return;
+      }
+      currentBaseThemeColor = color;
+      document.body.style.backgroundColor = color;
+      document.querySelector(".app-shell").style.backgroundColor = color;
+
+      const panels = document.querySelectorAll('.top-bar, .sidebar, .left-top, .left-bottom, .right-slot-1, .right-slot-3, .music-view, .theme-view, .tool-view, .today-modal-view');
+      panels.forEach(p => { if(p) p.style.backgroundColor = color; });
+    }
+
+    function processColorSelection(color, swatch) {
+      if (isTextColorMode) {
+        applyCustomTextColor(color);
+      } else {
+        applyThemeColor(color, swatch);
+      }
+    }
+
+    themeFeatureBtn.addEventListener("click", event => { event.stopPropagation(); showToolView(themeView); });
+    themeBackBtn.addEventListener("click", event => { event.stopPropagation(); hideToolView(); });
+
+    themeSwatches.forEach(swatch => swatch.addEventListener("click", event => {
+      event.stopPropagation(); processColorSelection(swatch.style.backgroundColor, swatch);
+    }));
+
+    function drawColorWheel() {
+      const size = themeColorCanvas.width;
+      const center = size / 2;
+      const radius = center - 2;
+      const image = themeColorContext.createImageData(size, size);
+      for (let y = 0; y < size; y += 1) {
+        for (let x = 0; x < size; x += 1) {
+          const dx = x - center; const dy = y - center;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const index = (y * size + x) * 4;
+          if (distance > radius) { image.data[index + 3] = 0; continue; }
+          const hue = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+          const saturation = distance / radius;
+          const chroma = saturation;
+          const sector = hue / 60;
+          const second = chroma * (1 - Math.abs(sector % 2 - 1));
+          const match = 1 - chroma;
+          const rgb = sector < 1 ? [chroma, second, 0] : sector < 2 ? [second, chroma, 0] : sector < 3 ? [0, chroma, second] : sector < 4 ? [0, second, chroma] : sector < 5 ? [second, 0, chroma] : [chroma, 0, second];
+          image.data[index] = Math.round((rgb[0] + match) * 255);
+          image.data[index + 1] = Math.round((rgb[1] + match) * 255);
+          image.data[index + 2] = Math.round((rgb[2] + match) * 255);
+          image.data[index + 3] = 255;
+        }
+      }
+      themeColorContext.putImageData(image, 0, 0);
+    }
+
+    function chooseWheelColor(event) {
+      const rect = themeColorCanvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+      const y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+      const pixel = themeColorContext.getImageData(Math.floor(x * themeColorCanvas.width / rect.width), Math.floor(y * themeColorCanvas.height / rect.height), 1, 1).data;
+      if (pixel[3] === 0) return;
+      const hex = "#" + [pixel[0], pixel[1], pixel[2]].map(value => value.toString(16).padStart(2, "0")).join("");
+      processColorSelection(hex, null);
+    }
+
+    drawColorWheel();
+    let wheelDragging = false;
+    themeColorWheel.addEventListener("pointerdown", event => { wheelDragging = true; chooseWheelColor(event); });
+    themeColorWheel.addEventListener("pointermove", event => { if (wheelDragging) chooseWheelColor(event); });
+    themeColorWheel.addEventListener("pointerup", () => { wheelDragging = false; });
+
+    function hslToHex(h, s, l) {
+      l /= 100;
+      const a = s * Math.min(l, 1 - l) / 100;
+      const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+      };
+      return `#${f(0)}${f(8)}${f(4)}`;
+    }
+
+    hueSlider.addEventListener("input", e => { processColorSelection(hslToHex(e.target.value, 100, lightnessSlider.value), null); });
+    lightnessSlider.addEventListener("input", e => { processColorSelection(hslToHex(hueSlider.value, 100, e.target.value), null); });
+
+    textColorToggleBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      isTextColorMode = !isTextColorMode;
+      textColorToggleBtn.classList.toggle("is-active", isTextColorMode);
+    });
+
+    musicFeatureBtn.addEventListener("click", event => { event.stopPropagation(); showToolView(musicView); });
+    musicBackBtn.addEventListener("click", event => { event.stopPropagation(); hideToolView(); });
+
+    // Shell Controls
+    let isUiHidden = false;
+    let hideHandleTimeout;
+    let floatingBtnTimeout;
+    let clickCount = 0;
+    let clickTimer;
+
+    function refreshIcons() { if (window.lucide) window.lucide.createIcons(); }
+
+    function setChevron(iconId, direction) {
+      const icon = document.getElementById(iconId);
+      if (icon) { icon.setAttribute("data-lucide", direction); refreshIcons(); }
+    }
+
+    function updateHandleIcons() {
+      setChevron("leftIcon", leftWrapper.classList.contains("open") ? "chevron-left" : "chevron-right");
+      setChevron("rightIcon", rightWrapper.classList.contains("open") ? "chevron-right" : "chevron-left");
+    }
+
+    function triggerHandlesVisibility() {
+      if (isUiHidden) return;
+      handleLeft.classList.add("visible");
+      handleRight.classList.add("visible");
+      clearTimeout(hideHandleTimeout);
+      hideHandleTimeout = setTimeout(() => {
+        handleLeft.classList.remove("visible");
+        handleRight.classList.remove("visible");
+      }, 1750);
+    }
+
+    function toggleLeft() { leftWrapper.classList.toggle("open"); updateHandleIcons(); }
+    function toggleRight() { rightWrapper.classList.toggle("open"); updateHandleIcons(); }
+    function toggleBoth() {
+      const shouldOpen = !leftWrapper.classList.contains("open") && !rightWrapper.classList.contains("open");
+      leftWrapper.classList.toggle("open", shouldOpen);
+      rightWrapper.classList.toggle("open", shouldOpen);
+      updateHandleIcons();
+    }
+
+    function showFloatingButton() {
+      floatingUiToggleBtn.classList.add("visible");
+      clearTimeout(floatingBtnTimeout);
+      floatingBtnTimeout = setTimeout(() => floatingUiToggleBtn.classList.remove("visible"), 1200);
+    }
+
+    function toggleAllUI() {
+      isUiHidden = !isUiHidden;
+      document.body.classList.toggle("hide-all-ui", isUiHidden);
+      if (isUiHidden) {
+        leftWrapper.classList.remove("open");
+        rightWrapper.classList.remove("open");
+        updateHandleIcons();
+        showFloatingButton();
+      } else {
+        floatingUiToggleBtn.classList.remove("visible");
+        clearTimeout(floatingBtnTimeout);
+      }
+    }
+
+    uiToggleBtn.addEventListener("click", event => { event.stopPropagation(); toggleAllUI(); });
+    floatingUiToggleBtn.addEventListener("click", event => { event.stopPropagation(); toggleAllUI(); });
+    profileBtn.addEventListener("click", event => { event.stopPropagation(); toggleRight(); triggerHandlesVisibility(); });
+    handleLeft.addEventListener("click", event => { event.stopPropagation(); toggleLeft(); });
+    handleRight.addEventListener("click", event => { event.stopPropagation(); toggleRight(); });
+
+    document.addEventListener("click", event => {
+      if (!event.target.closest(".main-content")) return;
+      if (isUiHidden) { showFloatingButton(); return; }
+      clickCount += 1;
+      if (clickCount === 1) {
+        triggerHandlesVisibility();
+        clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+      } else {
+        clearTimeout(clickTimer);
+        clickCount = 0;
+        toggleBoth();
+        triggerHandlesVisibility();
+      }
+    });
+
+    buildScrollableCalendar();
+    updateTimeDisplay();
+    setInterval(updateTimeDisplay, 1000);
+    refreshIcons();
+  </script>
+</body>
+</html>
